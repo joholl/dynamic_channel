@@ -163,7 +163,7 @@ class DynChannelClient(Client):  # TODO
                 if stage.topic:
                     line += f': "{stage.topic}"'
                 if stage not in self._stages[channel.guild].values():
-                    line = line.ljust(50) + "[untracked]"
+                    line = line.ljust(50) + " [untracked]"
                 text += f"{line}\n"
             text += "```\n"
         text += self.category_info.bot_control_message

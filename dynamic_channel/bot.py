@@ -4,8 +4,7 @@ import datetime
 import logging
 from typing import Generator
 
-from discord import (Client, Guild, PermissionOverwrite, StageChannel,
-                     TextChannel)
+from discord import Client, Guild, PermissionOverwrite, StageChannel, TextChannel
 
 from dynamic_channel.message import ReactMessage, react_to
 
@@ -213,7 +212,10 @@ class DynChannelClient(Client):  # TODO
         stage_name = f" - {owner.display_name}'s stage"
         overwrites = {
             owner: PermissionOverwrite(
-                request_to_speak=True, mute_members=True, move_members=True
+                request_to_speak=True,
+                manage_channels=True,
+                move_members=True,
+                mute_members=True,
             ),
         }
         stage_channel = await category.guild.create_stage_channel(

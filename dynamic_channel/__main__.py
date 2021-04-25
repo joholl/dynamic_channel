@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # SPDX-License-Identifier: GPL-3.0
 
+import argparse
 import logging
 import os
 
@@ -12,8 +13,27 @@ from .bot import CategoryInfo, DynChannelClient
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog=f"python -m {__package__}",
+        description=f"Run the {__package__} discord bot.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument("--env", "-e", default=".env", help="environment file")
+    parser.add_argument(
+        "--token", "-t", help="discord bot token (overrides .env file variable)"
+    )
+    parser.add_argument(
+        "--loglevel",
+        "-l",
+        default="DEBUG",
+        help="logging level",
+        choices=logging._nameToLevel.keys(),
+    )
+    parser.add_argument("--logfile", "-f", default="discord.log", help="log file path")
+    args = parser.parse_args()
+
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.NOTSET)
+    root_logger.setLevel(logging._nameToLevel[args.loglevel])
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -23,12 +43,12 @@ if __name__ == "__main__":
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)
 
-    handler = logging.FileHandler(filename="discord.log", encoding="utf-8", mode="w")
+    handler = logging.FileHandler(filename=args.logfile, encoding="utf-8", mode="w")
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)
 
     load_dotenv()
-    TOKEN = os.getenv("DISCORD_TOKEN")
+    TOKEN = args.token or os.getenv("DISCORD_TOKEN")
     CATEGORY_NAME = os.getenv("CATEGORY_NAME")
     TEXT_CHANNEL_NAME = os.getenv("TEXT_CHANNEL_NAME")
     TEXT_CHANNEL_TOPIC = os.getenv("TEXT_CHANNEL_TOPIC")

@@ -16,7 +16,7 @@ class ReactionWrapper:
 
     async def wrapper(self, other_self, *args, **kwargs):
         reaction, user = args
-        logger.debug(
+        logger.info(
             f"[{reaction.message.guild}] User {user} reacted to bot message: ({reaction})  --> {self.func.__name__}"
         )
         result = await self.func(other_self, *args, **kwargs)
@@ -35,30 +35,36 @@ def react_to(emoji, remove=False):
 class ReactMessage:
     reactions = {}
 
-    def __init__(self, text):
-        self._text = text
+    def __init__(self, client, get_text_cb):
+        self._client = client
+        self._get_text_cb = get_text_cb
         self.message = None
 
     @property
     def text(self):
-        return self._text
+        return self._get_text_cb()
 
-    async def set_text(self, value):
-        """Set message text. Edits discord message in the process."""
-        self._text = value
-        await self.message.edit(content=self._text)
+    async def update_text(self):
+        """Update discord message text."""
+        text = self.text
+        logger.info(f"[{self.message.guild}] Update bot control message in channel {self.message.channel}: {text}")
+        await self.message.edit(content=text)
 
     async def send_and_wait(self, channel):
-        # TODO how to limit reactions to the ones given? -> delete unknown reactions
-        self.message = await channel.send(self.text)
+        text = self.text
+        logger.info(f"[{channel.guild}] Create react message in channel {channel}: {text}")
+        self.message = await channel.send(text)
         for emoji in ReactMessage.reactions.keys():
             await self.message.add_reaction(emoji)
 
         while True:
-            reaction, user = await self.client.wait_for(
+            reaction, user = await self._client.wait_for(
                 "reaction_add",
-                check=lambda reaction, user: reaction.message == self.message
-                and str(reaction.emoji) in ReactMessage.reactions.keys()
-                and user != self.client.user,
+                check=lambda reaction, user: reaction.message == self.message and user != self._client.user,
             )
-            await ReactMessage.reactions[reaction.emoji](self, reaction, user)
+            if reaction.emoji in ReactMessage.reactions:
+                # call callback function (deleting reaction is up to callback)
+                await ReactMessage.reactions[reaction.emoji](self, reaction, user)
+            else:
+                # always remove unknown reactions
+                await reaction.remove(user)

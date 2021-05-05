@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 # TODO linters, README, licence, git, CI, CD?
-from dynamic_channel.log import TextChannelHandler
+# from dynamic_channel.log import TextChannelHandler
 
 from .bot import CategoryInfo, DynChannelBot
 
@@ -37,15 +37,15 @@ if __name__ == "__main__":
 
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-    # handler = logging.StreamHandler()
-    # handler.setFormatter(formatter)
-    # root_logger.addHandler(handler)
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    root_logger.addHandler(handler)
 
     # TODO
-    handler = TextChannelHandler()
-    handler.setFormatter(logging.Formatter("%(levelname)s _%(name)s_  %(message)s"))
-    handler.setLevel(logging.INFO)
-    root_logger.addHandler(handler)
+    # handler = TextChannelHandler()
+    # handler.setFormatter(logging.Formatter("%(levelname)s _%(name)s_  %(message)s"))
+    # handler.setLevel(logging.INFO)
+    # root_logger.addHandler(handler)
 
     handler = logging.FileHandler(filename=args.logfile, encoding="utf-8", mode="w")
     handler.setFormatter(formatter)

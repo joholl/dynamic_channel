@@ -7,7 +7,7 @@ from discord import Guild, PermissionOverwrite, StageChannel, TextChannel
 
 from dynamic_channel.control_channel import ControlChannel
 from dynamic_channel.dyn_channel import DynChannel
-from dynamic_channel.log import LogChannel
+# from dynamic_channel.log import LogChannel
 
 logger = logging.getLogger(__name__)
 
@@ -67,9 +67,9 @@ class DynCategory:
                 overwrites=overwrites,
             )
 
-    @property
-    async def log_channel(self) -> LogChannel:
-        return LogChannel(self, await self.log_text_channel)
+    # @property
+    # async def log_channel(self) -> LogChannel:
+    #     return LogChannel(self, await self.log_text_channel)
 
     @property
     async def log_text_channel(self) -> TextChannel:

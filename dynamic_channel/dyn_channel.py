@@ -65,9 +65,9 @@ class DynChannel:
         """Delete text and stage."""
         if self.stage_channel.members and not force:
             logger.warning(
-                f"[{self.guild}] Refusing to delete stage {self.stage_channel.name} because there are members in it: {self.owner}"
+                f"[{self.guild}] Refusing to delete channel {self.stage_channel.name} because there are members in it: {self.stage_channel.members}"
             )
-            return
+            raise RuntimeError(f"Refusing to delete channel {self.stage_channel.name} because it is not empty.")
 
         logger.info(f"[{self.guild}] Deleting text channel owned by {self.owner}: {self.text_channel}")
         await self.text_channel.delete()

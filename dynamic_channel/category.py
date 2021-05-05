@@ -146,6 +146,8 @@ class DynCategory:
 
         except StopIteration:
             logger.warning(f"[{self.guild}] User {owner} does not owns a dyn_channel. Refusing to delete.")
+        except RuntimeError:
+            logger.warning(f"[{self.guild}] User {owner} wants to delete their dyn_channel but it is not empty. Refusing.")
 
     async def delete_all_dyn_channels(self):
         for dyn_channel in self._tracked_dyn_channels:
